@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+black
+sqlalchemy
+passlib
+bcrypt
+python-jose
+cryptography
+python-multipart 
+pymongo
+motor==2.3.0
+email-validator==1.1.2
