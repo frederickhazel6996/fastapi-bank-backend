@@ -1,17 +1,14 @@
 # Body parameters
 from fastapi import APIRouter
-from typing import List, Optional
-from fastapi import Depends, status, Response, HTTPException
+from typing import List
+from fastapi import status, HTTPException
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
-from ..db import database
 from ..schemas import account
 from ..db.database import db
-from sqlalchemy.orm import Session
 
 
 router = APIRouter(
-    prefix="/account",
+    prefix="/api/account",
     tags=["Accounts"],
 )
 
