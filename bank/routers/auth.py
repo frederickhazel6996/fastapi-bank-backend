@@ -4,13 +4,12 @@ from typing import List
 from fastapi import status, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from ..schemas import user, token
+from ..schemas import user, token, account
 from ..db.database import db
 from fastapi.security import OAuth2PasswordRequestForm
 from ..utils.hash import verify_hash, encrypt_password
 from ..utils.jwt import create_access_token
 from random_username.generate import generate_username
-from fastapi.security import OAuth2PasswordRequestForm
 import uuid
 
 
@@ -29,6 +28,9 @@ async def register_user(request: user.UserRequestModel):
     temp_user_id = f"user{uuid.uuid1()}"
     _username = generate_username()
     temp_username = f"${_username[0]}"
+    _account_name = generate_username()
+    temp_account_name = f"${_account_name[0]}"
+    temp_account_id = f"account{uuid.uuid1()}"
 
     try:
         if (await db["users"].find_one({"email": request.email})) is None:
@@ -38,9 +40,16 @@ async def register_user(request: user.UserRequestModel):
                 user_id=temp_user_id,
                 username=temp_username,
             )
-
+            new_account = account.AccountModel(
+                user_id=temp_user_id,
+                account_id=temp_account_id,
+                name=temp_account_name,
+                balance=0,
+            )
             db_user = jsonable_encoder(new_user)
+            db_account = jsonable_encoder(new_account)
             await db["users"].insert_one(db_user)
+            await db["accounts"].insert_one(db_account)
             access_token = create_access_token(data={"username": temp_username})
             return {
                 "access_token": access_token,
